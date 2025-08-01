@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Multi-Stock Trading Bot Dashboard</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Multi-Stock Trading Bot</h1>
+        <div class="card border-secondary mt-4">
+            <div class="card-header">Account Information</div>
+            <div class="card-body">
+                <p><strong>Equity:</strong> ${{ account.EquityWithLoanValue }}</p>
+                <p><strong>Buying Power:</strong> ${{ account.BuyingPower }}</p>
+                <p><strong>Total Daily P&L:</strong> <span class="{{ 'text-success' if total_daily_pnl > 0 else 'text-danger' }}">${{ "%.2f"|format(total_daily_pnl) }}</span></p>
+            </div>
+        </div>
+        <div class="card border-secondary mt-4">
+            <div class="card-header">Current Positions</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr><th>Symbol</th><th>Qty</th><th>Avg Cost</th><th>Market Value</th><th>Daily P&L</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in positions %}
+                        <tr>
+                            <td><strong>{{ p.symbol }}</strong></td>
+                            <td>{{ p.qty }}</td>
+                            <td>${{ "%.2f"|format(p.avgCost) }}</td>
+                            <td>${{ "%.2f"|format(p.marketValue) }}</td>
+                            <td class="{{ 'text-success' if p.dailyPnl > 0 else 'text-danger' }}">${{ "%.2f"|format(p.dailyPnl) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center">No open positions.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="/download_data" class="btn btn-primary">Download Data as CSV</a>
+                <nav>
+                    <ul class="pagination mb-0">
+                        <li class="page-item {{ 'disabled' if page <= 1 else '' }}"><a class="page-link" href="?page={{ page - 1 }}">Previous</a></li>
+                        {% for p in range(1, total_pages + 1) %}
+                        <li class="page-item {{ 'active' if p == page else '' }}"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+                        {% endfor %}
+                        <li class="page-item {{ 'disabled' if page >= total_pages else '' }}"><a class="page-link" href="?page={{ page + 1 }}">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
